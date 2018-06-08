@@ -73,7 +73,7 @@ In the *SpecificationDiagram*, you can define a set of domain specifications, wi
 *Resource Properties*.
 
 ![An example domain specification
-diagram](LyoToolchainModel-SpecificationDiagram.png "An example domain specification diagram"){width="800"}
+diagram](images/LyoToolchainModel-SpecificationDiagram.png "An example domain specification diagram")
 
 1.  Using the **tools pallet** (located on the right), create any number
     of **Domain Specifications**.
