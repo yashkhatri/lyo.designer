@@ -82,8 +82,7 @@ source code:
 2.  In the new *Tool Chain Design* Eclipse workspace, switch to the
     **Sirius** perspective
 3.  Proceed with the modelling and generation as instructed in the
-    [Toolchain Modelling And Code Generation
-    Workshop](Lyo/ToolchainModellingAndCodeGenerationWorkshop#Create_a_Toolchain_Modelling_Project "wikilink")
+    [Lyo Designer Manual](User-Manual-for-Toolchain-Modelling)
 
 Developing the Lyo Modeller plugin
 ==================================
@@ -94,7 +93,7 @@ generation):
 1.  Run the *Tool Chain Design* configuration (created above)
 2.  create a Toolchain Modelling project as instructed in the [Testing
     or using the Lyo
-    plugins](Lyo/modelling_and_generation/working_from_source_code#Testing_or_using_the_Lyo_plugins "wikilink")
+    plugins](Working-from-Source-Code#testing-or-using-the-lyo-plugins)
     section above.
 3.  Switch to the **Sirius** perspective
 4.  Import the *org.eclipse.lyo.tools.toolchain.design* eclipse project
