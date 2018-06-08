@@ -1,10 +1,6 @@
----
-title: Lyo Designer
----
-
 Lyo Designer is an Eclipse plugin that allows one to graphically model (1) the overall system architecture, (2) the information model of the RDF resources being shared, and (3) the individual services and operations of each Server in the system. The figure below shows the information modelling interface:
 
-![An example domain specification diagram](images/LyoToolchainModel-SpecificationDiagram.png){width="800"}
+![An example domain specification diagram](images/LyoToolchainModel-SpecificationDiagram.png)
 
 Lyo Designer includes a integrated code generator that synthesizes the model into almost-complete OSLC4J-compliant running implementation.
 The resulting code includes:
@@ -24,9 +20,9 @@ Lyo Designer supports incremental development, where manual changes to the gener
 
 # Tutorials and Documentation
 
-* How to [install Lyo Designer](Installing Lyo Designer)
+* How to [install Lyo Designer](Installing-Lyo-Designer)
 * How to [use Lyo Designer](User Manual - Toolchain Modelling) to model a toolchain and generate an initial code base
 * How to [use Lyo Designer](User Manual - Domain Specification Modelling) to model domain specifications, and generate OSLC4J-annotated Java classes to reflect the defined OSLC Resources. 
-* [ Working with Lyo Designer from source code](Working from Source Code)
-    * [Eclipse Setup when working with source code](Working from Source Code#Eclipse_Setup_when_working_with_source_code)
+* [Working with Lyo Designer from source code](Working-from-Source-Code)
+    * [Eclipse Setup when working with source code](Working-from-Source-Code#Eclipse_Setup_when_working_with_source_code)
 
