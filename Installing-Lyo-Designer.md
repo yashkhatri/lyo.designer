@@ -2,7 +2,7 @@ The Modelling environment and code generator is known to work on Eclipse
 Neon and Oxygen. But, first make sure your Eclipse environment is setup
 as expected for general OSLC4J development, as instructed in [ General
 Setup for OSLC4J
-development](Lyo/General_Setup_for_OSLC4J_Development "wikilink")
+development](https://wiki.eclipse.org/Lyo/General_Setup_for_OSLC4J_Development)
 
 The easiest way to install Lyo Designer is via the update-site
 <http://download.eclipse.org/lyo/p2/stable/>. (This URL is intended to
