@@ -45,7 +45,7 @@ adaptors.
 Bug Reporting
 =============
 
-The prototype presented here is under development and its features may change over time. Your feedback, suggestions for improvements and bug reports are appreciated. In particular, the graphical notation being used is experimental and certainly needs further improvements. Please send any questions or suggestions to the project mailinglist lyo-dev@eclipse.org, or report Bugs/features on [Github](https://github.com/eclipse/lyo.designer/issues)''
+The prototype presented here is under development and its features may change over time. Your feedback, suggestions for improvements and bug reports are appreciated. In particular, the graphical notation being used is experimental and certainly needs further improvements. Please send any questions or suggestions to the project mailinglist lyo-dev@eclipse.org, or report Bugs/features on [Github](https://github.com/eclipse/lyo.designer/issues)
 
 References
 ==========
@@ -403,7 +403,7 @@ These projects will then be populated with the generated code needed.
 
 **Note:** Make sure each project is configured to match the Adaptor
 Interface project properties defined under [ Toolchain
-View](User-Manual-for-Toolchain-Modelling#Toolchain_View)
+View](User-Manual-for-Toolchain-Modelling#toolchain-view)
 
 Generate OSLC4J Java code
 =========================
