@@ -11,7 +11,7 @@ For seperations of concerns, Lyo Designer structures the toolchain model around 
     Specification](http://open-services.net/bin/view/Main/OslcCoreSpecification)
     and the [Resource Shape constraint
     language](http://open-services.net/bin/view/Main/OSLCCoreSpecAppendixA#oslc_ResourceShape_Resource).
-    - Lyo Designer can also be used to solely model domains, as instructed under the [ Domain Specification Modelling](Lyo/DomainSpecificationModelling "wikilink") workshop.
+    - Lyo Designer can also be used to solely model domains, as instructed under the [User Manual for Domain Specification Modelling](User Manual - Domain Specification Modelling).
 -   **Toolchain View** – To allocate resources to tools. For each tool,
     the set of resources being exposes and/or consumed are defined.
 -   **Adapter Interface View** – To design the internal details of the
@@ -32,30 +32,20 @@ This tutorial takes you through the steps from creating the initial
 modelling project to the code generation and final execution of the tool
 adaptors.
 
-1.  In [ Eclipse
-    Setup](Lyo/ToolchainModellingAndCodeGenerationWorkshop#Eclipse_Setup "wikilink"),
-    you will perform the necessary installation and configuration of
+1.  First, you will perform the necessary installation and configuration of
     your Eclipse environment.
-2.  In [ Create a Toolchain Modelling
-    Project](Lyo/ToolchainModellingAndCodeGenerationWorkshop#Create_a_Toolchain_Modelling_Project "wikilink"),
-    you will create an empty modelling project, configured to start
+2.  Create an empty modelling project, configured to start
     modelling your toolchain.
-3.  In [ Model the
-    Toolchain](Lyo/ToolchainModellingAndCodeGenerationWorkshop#Model_the_Toolchain "wikilink")
-    , you will graphically specify your toolchain and adaptor
+3.  Graphically specify your toolchain and adaptor
     functionality, from which almost complete code will be generated.
-4.  In [ Generate OSLC4J Java
-    code](Lyo/ToolchainModellingAndCodeGenerationWorkshop#Generate_OSLC4J_Java_code "wikilink"),
-    you will perform the steps to generate the necessary OSLC4J code.
-5.  In [ Finalize Development of each
-    Adaptor](Lyo/ToolchainModellingAndCodeGenerationWorkshop#Finalize_Development_of_each_Adaptor "wikilink"),
-    you perform the final implementation steps to make the adaptors
+4.  Perform the steps to generate the necessary OSLC4J code.
+5.  Perform the final implementation steps to make the adaptors
     ready to run.
 
 Bug Reporting
 =============
 
-The prototype presented here is under development and its features may change over time. Your feedback, suggestions for improvements and bug reports are appreciated. In particular, the graphical notation being used is experimental and certainly needs further improvements. Please send any questions or suggestions to the project mailinglist lyo-dev@eclipse.org, or report Bugs/features through [Bugzilla](https://bugs.eclipse.org/bugs/enter_bug.cgi?product=Lyo)''
+The prototype presented here is under development and its features may change over time. Your feedback, suggestions for improvements and bug reports are appreciated. In particular, the graphical notation being used is experimental and certainly needs further improvements. Please send any questions or suggestions to the project mailinglist lyo-dev@eclipse.org, or report Bugs/features on [Github](https://github.com/eclipse/lyo.designer/issues)''
 
 References
 ==========
@@ -70,11 +60,9 @@ If you wish to cite this modelling prototype in scientific papers
 Eclipse Setup
 =============
 
-First, make sure your Eclipse environment is setup as expected for general OSLC4J development, as instructed in [General Setup for OSLC4J development](Lyo/General_Setup_for_OSLC4J_Development "wikilink")
+First, make sure your Eclipse environment is setup as expected for general OSLC4J development, as instructed in [General Setup for OSLC4J development](https://wiki.eclipse.org/Lyo/General_Setup_for_OSLC4J_Development)
 
-Then, make sure your environment is setup for OSLC4J modelling and code
-generation as instructed on [ Modelling and Generation
-Installation](Lyo/modelling_and_generation/installation "wikilink")
+Then, make sure you [install Lyo Designer](Installing-Lyo-Designer)
 
 Create a Toolchain Modelling Project
 ====================================
@@ -156,7 +144,7 @@ main parts:
 -   **Client** - modelling the interactions - as a client - that the
     adaptor might have with other OSLC servers.
 
-![The Tool Adaptor Metal Model](OSLCToolAdaptorMetalModel.png "The Tool Adaptor Metal Model"){width="800"}
+![The Tool Adaptor Metal Model](images/OSLCToolAdaptorMetalModel.png "The Tool Adaptor Metal Model")
 
 General Modelling Instructions
 ------------------------------
@@ -204,10 +192,10 @@ In this view, you can define the set of domain specifications of
 relevance to the tool-chain, including the definition of *Resources* and
 *Resource Properties* that form each *Domain Specification*.
 
-The instructions below explain how to define your domains within the same toolchain model. Lyo Designer also allows you to import and reuse existing Domain Specification models, as instructed under the [ Domain Specification Modelling](Lyo/DomainSpecificationModelling#Handling_Large_Models "wikilink") workshop.
+The instructions below explain how to define your domains within the same toolchain model. Lyo Designer also allows you to import and reuse existing Domain Specification models, as instructed under the [User Manual for Domain Specification Modelling](User Manual - Domain Specification Modelling)
 
 ![An example domain specification
-diagram](LyoToolchainModel-SpecificationDiagram.png "An example domain specification diagram"){width="800"}
+diagram](images/LyoToolchainModel-SpecificationDiagram.png "An example domain specification diagram")
 
 1.  Using the **tools pallet** (located on the right), create any number
     of **Domain Specifications**.
@@ -263,7 +251,7 @@ interactions between the tool interfaces, by defining the resources each
 interface produces and/or consumes.
 
 ![An example toolchain
-diagram](LyoToolchainModel-ToolchainDiagram.png "An example toolchain diagram"){width="800"}
+diagram](images/LyoToolchainModel-ToolchainDiagram.png "An example toolchain diagram")
 
 1.  Using the tools pallet, create any number of **Adaptor
     Interface** elements. For each such **Adaptor Interface**, it is
@@ -299,7 +287,7 @@ Providers, Services, etc. This information forms the basis for the code
 being generated.
 
 ![An example adaptor interface
-diagram](LyoToolchainModel-AdaptorInterfaceDiagram.png "An example adaptor interface diagram"){width="800"}
+diagram](images/LyoToolchainModel-AdaptorInterfaceDiagram.png "An example adaptor interface diagram")
 
 1.  In the Toolchain view, double-click on the **Adaptor Interface** to
     open its internal design view.
@@ -386,7 +374,7 @@ At any time, you can validate your model to ensure that all required
 properties are defined as expected:
 
 ![ Toolchain Model
-Validation](Lyo-ToolchainModelValidation.png " Toolchain Model Validation"){width="800"}
+Validation](images/Lyo-ToolchainModelValidation.png " Toolchain Model Validation")
 
 1.  In the **ModelExplorer**, double-click on the toolchain model
     (*toolchain.xml*) file, to open the model using a standard editor.
@@ -409,13 +397,13 @@ each of the adaptors.
 
 For each of the Adaptor Interfaces in the model, create and setup an
 Eclipse OSLC4J project as instructed under [Create an OSLC4J
-project](Lyo/creating_OSLC4J_project "wikilink").
+project](https://wiki.eclipse.org/Lyo/creating_OSLC4J_project).
 
 These projects will then be populated with the generated code needed.
 
 **Note:** Make sure each project is configured to match the Adaptor
 Interface project properties defined under [ Toolchain
-View](Lyo/ToolchainModellingAndCodeGenerationWorkshop#Toolchain_View "wikilink")
+View](User-Manual-for-Toolchain-Modelling#Toolchain_View)
 
 Generate OSLC4J Java code
 =========================
