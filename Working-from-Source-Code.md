@@ -21,8 +21,7 @@ of the plugins you plan to test or develop:
     concern about the graphical modelling capabilities)
 
 To simply use the latest plugin release, the reader is referred to the
-[Toolchain Designer workshop on Modelling and Code
-Generation](User-Manual-for-Toolchain-Modelling)
+[Lyo Designer User Manual](User-Manual-for-Toolchain-Modelling)
 instead.
 
 Eclipse Setup
