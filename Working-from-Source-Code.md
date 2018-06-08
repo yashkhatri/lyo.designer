@@ -22,7 +22,7 @@ of the plugins you plan to test or develop:
 
 To simply use the latest plugin release, the reader is referred to the
 [Toolchain Designer workshop on Modelling and Code
-Generation](Lyo/ToolchainModellingAndCodeGenerationWorkshop "wikilink")
+Generation](User-Manual-for-Toolchain-Modelling)
 instead.
 
 Eclipse Setup
