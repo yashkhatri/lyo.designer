@@ -4,21 +4,19 @@ With Lyo Designer, you can graphically model your domain specifications accordin
 
 From such a model, you can produce a library of Java classes, with the appropriate Lyo OSLC4J annotations to reflect the defined OSLC Resources, and their properties. These classes can then be further used in the development of OSLC applications using the Lyo OSLC4J SDK.
 
-A domains model can also be imported into a toolchain model, to model a complete toolchain, as well as a single server and/or client. (see [Lyo's Toolchain Modelling Instructions](Lyo/ToolchainModellingAndCodeGenerationWorkshop "wikilink") for details).
+A domains model can also be imported into a toolchain model, to model a complete toolchain, as well as a single server and/or client. (see [Lyo Designer Manual](User-Manual-for-Toolchain-Modelling) for details).
 
 Bug Reporting
 -------------
 
-Please send any bug reports, questions or suggestions to the project mailinglist lyo-dev@eclipse.org, or report Bugs/features through [Bugzilla](https://bugs.eclipse.org/bugs/enter_bug.cgi?product=Lyo)
+Please send any bug reports, questions or suggestions to the project mailinglist lyo-dev@eclipse.org, or report Bugs/features on [Github](https://github.com/eclipse/lyo.designer/issues)
 
 Eclipse Setup
 =============
 
-First, make sure your Eclipse environment is setup as expected for general OSLC4J development, as instructed in [General Setup for OSLC4J development](Lyo/General_Setup_for_OSLC4J_Development "wikilink")
+First, make sure your Eclipse environment is setup as expected for general OSLC4J development, as instructed in [General Setup for OSLC4J development](https://wiki.eclipse.org/Lyo/General_Setup_for_OSLC4J_Development)
 
-Then, make sure your environment is setup for OSLC4J modelling and code
-generation as instructed on [ Modelling and Generation
-Installation](Lyo/modelling_and_generation/installation "wikilink")
+Then, make sure you [install Lyo Designer](Installing-Lyo-Designer)
 
 Create a Modelling Project
 ==========================
@@ -69,7 +67,7 @@ Model OSLC Domain Specifications
 
 You are now ready to graphically specify the OSLC domain specifications.
 
-For general instructions on Lyo Designer, the reader is referred to [Lyo's Toolchain Modelling Instructions](Lyo/ToolchainModellingAndCodeGenerationWorkshop#General_Modelling_Instructions "wikilink").
+For general instructions on Lyo Designer, the reader is referred to the general [Lyo Designer manual](User-Manual-for-Toolchain-Modelling).
 
 In the *SpecificationDiagram*, you can define a set of domain specifications, within which you define *Resources* and
 *Resource Properties*.
@@ -180,7 +178,7 @@ You first need to create the necessary OSLC4J project(s), onto which the code wi
 
 1. Create the OSLC4J library project. For example using mvn:
     * **mvn archetype:generate -DgroupId=domain-project-group -DartifactId=domain-project -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false**
-1. Add the necessary maven dependencies by following the instructions under [Create an OSLC4J project](Lyo/creating_OSLC4J_project "wikilink").
+1. Add the necessary maven dependencies by following the instructions under [Create an OSLC4J project](https://wiki.eclipse.org/Lyo/creating_OSLC4J_project).
     * At the least the `oslc4j-core` dependency is necessary.
 1. Configure the Specification model's settings to generate code within the newly created OSLC4J project.
     1. Right-click inside the Specification Diagram (without selecting any Domain Specification) and select the context menu item **OSLC Lyo Designer > Set Java Generation Settings**
