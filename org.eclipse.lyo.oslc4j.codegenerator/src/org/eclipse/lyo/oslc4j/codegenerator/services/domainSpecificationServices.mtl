@@ -38,6 +38,19 @@ aShaclProperty.eContainer(DomainSpecification)
 aShaclShape.eContainer(DomainSpecification)
 /]
 
+[query public definingDomainSpecification(aShapeProperty: ShapeProperty) : DomainSpecification =
+aShapeProperty.eContainer(DomainSpecification)
+/]
+
+[query public definingDomainSpecification(aShape: Shape) : DomainSpecification =
+if (aShape.oclIsTypeOf(ShaclShape)) then 
+    aShape.oclAsType(ShaclShape).eContainer(DomainSpecification)
+else
+    aShape.oclAsType(Resource).eContainer(DomainSpecification)
+endif
+/]
+
+
 [query public javaFullFilesPath(aSpecification: Specification, anAdaptorInterface : AdaptorInterface, default : String) : String = 
 (if (aSpecification.generationSetting.oclIsUndefined())._or(aSpecification.generationSetting.javaFilesPath.isNullOrEmpty()) then 
     (if (anAdaptorInterface.oclIsUndefined()) then 

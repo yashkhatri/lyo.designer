@@ -26,7 +26,7 @@
 [module generateResourceInterface('http://org.eclipse.lyo/oslc4j/adaptorInterface')]
 
 [import org::eclipse::lyo::oslc4j::codegenerator::services::services/]
-[import org::eclipse::lyo::oslc4j::codegenerator::services::resourceServices/]
+[import org::eclipse::lyo::oslc4j::codegenerator::services::commonShapeServices/]
 [import org::eclipse::lyo::oslc4j::codegenerator::services::resourcePropertyServices/]
 [import org::eclipse::lyo::oslc4j::codegenerator::services::adaptorInterfaceServices/]
 [import org::eclipse::lyo::oslc4j::codegenerator::services::domainSpecificationServices/]
@@ -100,8 +100,8 @@ import org.eclipse.lyo.oslc4j.core.model.Representation;
 import org.eclipse.lyo.oslc4j.core.model.ValueType;
 
 import [javaInterfaceFullNameForConstants(aResource.definingDomainSpecification(), contextAdaptorInterface, defaultJavaClassPackageName)/];
-[for (aDomainSpecification: DomainSpecification | (aResource.resourceProperties->union(aResource.interfaceProperties()->asSet())->collect(p: ResourceProperty | Set{p.definingDomainSpecification()}->union(p.range.definingDomainSpecification()->asSet())))->flatten()->asSet()->sortedBy(name)) separator(lineSeparator())]import [javaInterfaceFullNameForConstants(aDomainSpecification, contextAdaptorInterface, defaultJavaClassPackageName) /];[/for]
-[for (aProperty: ResourceProperty | allProperties(aResource)->sortedBy(name))]
+[for (aDomainSpecification: DomainSpecification | (aResource.resourceProperties->union(aResource.interfaceShapeProperties().oclAsType(ResourceProperty)->asSet())->collect(p: ResourceProperty | Set{p.definingDomainSpecification()}->union(p.range.definingDomainSpecification()->asSet())))->flatten()->asSet()->sortedBy(name)) separator(lineSeparator())]import [javaInterfaceFullNameForConstants(aDomainSpecification, contextAdaptorInterface, defaultJavaClassPackageName) /];[/for]
+[for (aProperty: ResourceProperty | allShapeProperties(aResource).oclAsType(ResourceProperty)->sortedBy(name))]
 [if(Sequence{'Resource', 'LocalResource'}->includes(aProperty.valueType.toString())) ]
 [for (r: Resource | aProperty.range)]
 import [javaInterfaceFullName(r, contextAdaptorInterface, defaultJavaClassPackageName) /];
@@ -114,7 +114,7 @@ import [javaInterfaceFullName(r, contextAdaptorInterface, defaultJavaClassPackag
 
 [namespaceAnnotation(aResource)/]
 [nameAnnotation(aResource)/]
-[resourceShapeAnnotation(aResource)/]
+[shapeAnnotation(aResource)/]
 public interface [javaInterfaceName(aResource) /]
 {
 

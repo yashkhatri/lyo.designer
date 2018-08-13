@@ -20,7 +20,7 @@
 [module generateShaclShapeInterface('http://org.eclipse.lyo/oslc4j/adaptorInterface')]
 
 [import org::eclipse::lyo::oslc4j::codegenerator::services::services/]
-[import org::eclipse::lyo::oslc4j::codegenerator::services::shaclShapeServices/]
+[import org::eclipse::lyo::oslc4j::codegenerator::services::commonShapeServices/]
 [import org::eclipse::lyo::oslc4j::codegenerator::services::shaclPropertyServices/]
 [import org::eclipse::lyo::oslc4j::codegenerator::services::adaptorInterfaceServices/]
 [import org::eclipse::lyo::oslc4j::codegenerator::services::domainSpecificationServices/]
@@ -87,8 +87,8 @@ import org.eclipse.lyo.oslc4j.core.model.Representation;
 import org.eclipse.lyo.oslc4j.core.model.ValueType;
 
 import [javaInterfaceFullNameForConstants(aShaclShape.definingDomainSpecification(), contextAdaptorInterface, defaultJavaClassPackageName)/];
-[for (aDomainSpecification: DomainSpecification | (aShaclShape.shaclProperties->union(aShaclShape.interfaceShaclProperties()->asSet())->collect(p: ShaclProperty | Set{p.definingDomainSpecification()}->union(p.class.definingDomainSpecification()->asSet())))->flatten()->asSet()->sortedBy(name)) separator(lineSeparator())]import [javaInterfaceFullNameForConstants(aDomainSpecification, contextAdaptorInterface, defaultJavaClassPackageName) /];[/for]
-[for (aShaclProperty: ShaclProperty | allShacProperties(aShaclShape)->sortedBy(name))]
+[for (aDomainSpecification: DomainSpecification | (aShaclShape.shaclProperties->union(aShaclShape.interfaceShapeProperties().oclAsType(ShaclProperty)->asSet())->collect(p: ShaclProperty | Set{p.definingDomainSpecification()}->union(p.class.definingDomainSpecification()->asSet())))->flatten()->asSet()->sortedBy(name)) separator(lineSeparator())]import [javaInterfaceFullNameForConstants(aDomainSpecification, contextAdaptorInterface, defaultJavaClassPackageName) /];[/for]
+[for (aShaclProperty: ShaclProperty | allShapeProperties(aShaclShape).oclAsType(ShaclProperty)->sortedBy(name))]
 [if(Sequence{'Resource'}->includes(aShaclProperty.dataType.toString())) ]
 [for (s: ShaclShape | aShaclProperty.class)]
 import [javaInterfaceFullName(s, contextAdaptorInterface, defaultJavaClassPackageName) /];
@@ -101,7 +101,7 @@ import [javaInterfaceFullName(s, contextAdaptorInterface, defaultJavaClassPackag
 
 [namespaceAnnotation(aShaclShape)/]
 [nameAnnotation(aShaclShape)/]
-[shaclShapeAnnotation(aShaclShape)/]
+[shapeAnnotation(aShaclShape)/]
 public interface [javaInterfaceName(aShaclShape) /]
 {
 

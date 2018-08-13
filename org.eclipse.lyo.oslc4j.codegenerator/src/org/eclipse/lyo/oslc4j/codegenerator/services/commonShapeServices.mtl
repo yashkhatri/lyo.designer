@@ -1,0 +1,329 @@
+[comment encoding = UTF-8 /]
+[comment
+/*******************************************************************************
+ * Copyright (c) 2018 Yash Khatri.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ *
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *
+ *     Yash Khatri          - Support for Shacl Shapes.
+ *******************************************************************************/
+/]
+
+[module commonShapeServices('http://org.eclipse.lyo/oslc4j/adaptorInterface')/]
+
+[import org::eclipse::lyo::oslc4j::codegenerator::services::services/]
+[import org::eclipse::lyo::oslc4j::codegenerator::services::domainSpecificationServices/]
+
+[query public directParentShape(aShape: Shape) : Shape=
+    
+if (aShape.oclIsTypeOf(ShaclShape)) then 
+	
+    (if (aShape.oclAsType(ShaclShape).extends->notEmpty()) then 
+        aShape.oclAsType(ShaclShape).extends->first()
+    else
+        null
+    endif)
+
+else
+
+    (if (aShape.oclAsType(Resource).extends->notEmpty()) then 
+        aShape.oclAsType(Resource).extends->first()
+    else
+        null
+    endif)
+
+endif
+/]
+
+[query public parentShapes(aShape: Shape) : Set(Shape) =
+    (if (directParentShape(aShape)->notEmpty()) then 
+        directParentShape(aShape)->union(parentShapes(directParentShape(aShape)))
+    else
+        Set{}
+    endif)
+/]
+
+[query public allExtendingShapes(aShape: Shape) : OrderedSet(Shape) =
+    
+    if (aShape.oclIsTypeOf(ShaclShape)) then 
+
+    aShape.oclAsType(ShaclShape).extends
+    ->union(
+            aShape.oclAsType(ShaclShape).extends->collectNested(r:ShaclShape| allExtendingShapes(r))->flatten()->asOrderedSet()
+            )
+    ->asOrderedSet()
+    
+    else
+
+    aShape.oclAsType(Resource).extends
+    ->union(
+            aShape.oclAsType(Resource).extends->collectNested(r:Resource | allExtendingShapes(r))->flatten()->asOrderedSet()
+            )
+    ->asOrderedSet()
+
+    endif
+/]
+
+[query public interfaceShapes(aShape: Shape) : OrderedSet(Shape) =
+    ((directInterfaceShapes(aShape)
+    ->union(
+            directInterfaceShapes(aShape)->collectNested(r:Shape| allExtendingShapes(r))->flatten()->asOrderedSet()
+            )
+    ->asOrderedSet())
+    - parentShapes(aShape))
+    ->asOrderedSet()
+/]
+
+[query private directInterfaceShapes(aShape: Shape) : OrderedSet(Shape) =
+if (aShape.oclIsTypeOf(ShaclShape)) then 
+
+    (if (aShape.oclAsType(ShaclShape).extends->size() > 1) then 
+        aShape.oclAsType(ShaclShape).extends->subOrderedSet(2, aShape.oclAsType(ShaclShape).extends->size())
+    else
+        OrderedSet{}
+    endif)
+
+else
+
+    (if (aShape.oclAsType(Resource).extends->size() > 1) then 
+        aShape.oclAsType(Resource).extends->subOrderedSet(2, aShape.oclAsType(Resource).extends->size())
+    else
+        OrderedSet{}
+    endif)
+
+endif
+
+   
+/]
+
+[query public directlyRelatedShapes(aShape: Shape) : Set(Shape) =
+if (aShape.oclIsTypeOf(ShaclShape)) then 
+
+    (aShape.oclAsType(ShaclShape).shaclProperties->collect(p : ShaclProperty | p.class))->flatten()->asSet()
+    ->union(
+        aShape.oclAsType(ShaclShape).extends
+    )->flatten()->asSet()
+
+else
+
+    (aShape.oclAsType(Resource).resourceProperties->collect(p : ResourceProperty | p.range))->flatten()->asSet()
+    ->union(
+        aShape.oclAsType(Resource).extends
+    )->flatten()->asSet()
+
+endif
+/]
+
+[comment allRelatedResources seems to hang for long & complicated hierarchy of resources. 
+As an intermediate solution, the depth parameter is introduced to allow the recursive query to stop once a certain limit is reached /]
+[query private allRelatedShapes(aShape: Shape, alreadyAnalysed : Set(Shape), depth : Integer) : Set(Shape) =
+let drr : Set(Shape) = directlyRelatedShapes(aShape),
+    newAlreadyAnalysed : Set(Shape) = (Set{aShape}->union(drr))->union(alreadyAnalysed),
+    toAnalyse : Set(Shape) =  drr - alreadyAnalysed in 
+
+    (if (depth > 20) then 
+        drr - alreadyAnalysed 
+    else
+        toAnalyse->collect(r : Shape | 
+            allRelatedShapes(r, newAlreadyAnalysed, depth+1)
+            ->union(directlyRelatedShapes(r))
+            ->union(Set{r})
+        )->flatten()->asSet()
+    endif)
+/]
+
+[comment allRelatedResources seems to hang for long & complicated hierarchy of resources. 
+As an intermediate solution, the depth parameter is introduced to allow the recursive query to stop once a certain limit is reached. 
+After that, we look at what related resources might be potentially missing, and then re-start the query for the remaining resources. 
+This is not a complete solution, but seems to be working for the Autosar 800+ resources. 
+It is not clear why the recursion is ending up in an endless loop otherwise. /]
+[query public allRelatedShapes(aShape: Shape) : Set(Shape) =
+let arr : Set(Shape) = allRelatedShapes(aShape, Set{}, 1),
+    leftOut : Set(Shape) = arr->collect(r : Shape | directlyRelatedShapes(r) - arr)->flatten()->asSet()
+in
+    arr
+    ->union(leftOut)
+    ->union(leftOut->collect(r : Shape | allRelatedShapes(r, arr->union(Set{r}), 1))->flatten()->asSet())
+/]
+
+[query public allShapeProperties(aShape: Shape) : Sequence(ShapeProperty) = 
+if (aShape.oclIsTypeOf(ShaclShape)) then 
+
+((aShape.oclAsType(ShaclShape).shaclProperties->asSequence())
+    ->union(inheritedShapeProperties(aShape.oclAsType(ShaclShape)))
+    ->union(interfaceShapeProperties(aShape.oclAsType(ShaclShape)))
+)
+
+else
+
+((aShape.oclAsType(Resource).resourceProperties->asSequence())
+    ->union(inheritedShapeProperties(aShape.oclAsType(Resource)))
+    ->union(interfaceShapeProperties(aShape.oclAsType(Resource)))
+)
+
+endif
+/]
+
+[query public inheritedShapeProperties(aShape: Shape) : Sequence(ShapeProperty) = 
+if (aShape.oclIsTypeOf(ShaclShape)) then 
+
+    (if (not aShape.directParentShape().oclIsUndefined()) then 
+        (aShape.directParentShape().oclAsType(ShaclShape).shaclProperties->asSequence())->union(inheritedShapeProperties(aShape.directParentShape()))
+    else
+        Sequence{}
+    endif)
+
+else
+
+(if (not aShape.directParentShape().oclIsUndefined()) then 
+        (aShape.directParentShape().oclAsType(Resource).resourceProperties->asSequence())->union(inheritedShapeProperties(aShape.directParentShape()))
+    else
+        Sequence{}
+    endif)
+
+endif
+/]
+
+
+[query public interfaceShapeProperties(aShape: Shape) : Sequence(ShapeProperty) =
+if (aShape.oclIsTypeOf(ShaclShape)) then 
+
+    aShape.oclAsType(ShaclShape).interfaceShapes().oclAsType(ShaclShape).shaclProperties->collect(oclAsType(ShaclProperty))->asSequence()
+
+else
+
+    aShape.oclAsType(Resource).interfaceShapes().oclAsType(Resource).resourceProperties
+
+endif
+/]
+
+[query public javaName(aShape: Shape, toUpperFirst : Boolean) : String = 
+if (aShape.oclIsTypeOf(ShaclShape)) then 
+javaString(aShape.oclAsType(ShaclShape).name, aShape.definingDomainSpecification().namespacePrefix.name, toUpperFirst)
+else
+javaString(aShape.oclAsType(Resource).name, aShape.definingDomainSpecification().namespacePrefix.name, toUpperFirst)
+endif
+/]
+
+[query public javaInstanceName(aShape: Shape) : String = 
+javaName(aShape, false)
+/]
+
+[query public javaClassPackageName(aShape: Shape, anAdaptorInterface : AdaptorInterface, defaultJavaPackageName : String) : String = 
+javaPackageName(aShape.definingDomainSpecification(), anAdaptorInterface, defaultJavaPackageName)
+/]
+
+[query public javaClassName(aShape: Shape) : String = 
+javaName(aShape, true)
+/]
+
+[query public javaClassFullName(aShape: Shape, anAdaptorInterface : AdaptorInterface, defaultJavaPackageName : String) : String = 
+javaClassPackageName(aShape, anAdaptorInterface, defaultJavaPackageName).concat('.').concat(javaClassName(aShape))
+/]
+
+[query public javaClassFullNameAnnotation(annotation: String, anAdaptorInterface : AdaptorInterface) : String = 
+'org.eclipse.lyo.shacl.annotations.'.concat(annotation)
+/]
+
+[query public javaClassFullFileName(aShape: Shape, anAdaptorInterface : AdaptorInterface, defaultJavaFullFilesPath : String, defaultJavaPackageName : String) : String =
+    javaFullFilesPath(aShape.definingDomainSpecification(), anAdaptorInterface, defaultJavaFullFilesPath)
+    .concatenatePaths(javaClassPackageName(aShape, anAdaptorInterface, defaultJavaPackageName).substituteAll('.', '/'))
+    .concatenatePaths(javaClassName(aShape))
+    .concat('.java')
+/]
+
+[query public javaInterfacePackageName(aShape: Shape, anAdaptorInterface : AdaptorInterface, defaultJavaPackageName : String) : String = 
+javaClassPackageName(aShape, anAdaptorInterface, defaultJavaPackageName)
+/]
+
+[query public javaInterfaceName(aShape: Shape) : String = 
+'I'.concat(javaName(aShape, true))
+/]
+
+[query public javaInterfaceFullName(aShape: Shape, anAdaptorInterface : AdaptorInterface, defaultJavaPackageName : String) : String = 
+javaInterfacePackageName(aShape, anAdaptorInterface, defaultJavaPackageName).concat('.').concat(javaInterfaceName(aShape))
+/]
+
+[query public javaInterfaceFullFileName(aShape: Shape, anAdaptorInterface : AdaptorInterface, defaultJavaFullFilesPath : String, defaultJavaPackageName : String) : String = 
+    javaFullFilesPath(aShape.definingDomainSpecification(), anAdaptorInterface, defaultJavaFullFilesPath)
+    .concatenatePaths(javaInterfacePackageName(aShape, anAdaptorInterface, defaultJavaPackageName).substituteAll('.', '/'))
+    .concatenatePaths(javaInterfaceName(aShape))
+    .concat('.java')
+/]
+
+[query public shapeConstantName(aShape : Shape) : String = 
+if (aShape.oclIsTypeOf(ShaclShape)) then
+
+    javaConstantString(aShape.oclAsType(ShaclShape).name)
+
+else
+
+    javaConstantString(aShape.oclAsType(Resource).name)
+
+endif
+/]
+
+[query public shapePathConstantName(aShape : Shape) : String = 
+shapeConstantName(aShape).concat('_PATH')
+/]
+
+[query public shapeTypeNamespaceConstantName(aShape : Shape) : String = 
+shapeConstantName(aShape).concat('_NAMESPACE')
+/]
+
+[query public shapeTypeLocalNameConstantName(aShape : Shape) : String = 
+shapeConstantName(aShape).concat('_LOCALNAME')
+/]
+
+[query public shapeTypeConstantName(aShape : Shape) : String = 
+shapeConstantName(aShape).concat('_TYPE')
+/]
+
+[query public nameAnnotation(aShape : Shape) : String = 
+'@OslcName('
+.concat(javaInterfaceNameForConstants(aShape.definingDomainSpecification()))
+.concat('.')
+.concat(shapeTypeLocalNameConstantName(aShape))
+.concat(')')
+/]
+
+[query public namespaceAnnotation(aShape : Shape) : String = 
+'@OslcNamespace('
+.concat(javaInterfaceNameForConstants(aShape.definingDomainSpecification()))
+.concat('.')
+.concat(shapeTypeNamespaceConstantName(aShape))
+.concat(')')
+/]
+
+[query public shapeAnnotation(aShape : Shape) : String = 
+if (aShape.oclIsTypeOf(ShaclShape)) then 
+
+'@OslcResourceShape(title = "'
+.concat(aShape.oclAsType(ShaclShape).name).concat(' ').concat('Shacl Shape')
+.concat('", describes = ')
+.concat(javaInterfaceNameForConstants(aShape.definingDomainSpecification()))
+.concat('.')
+.concat(shapeTypeConstantName(aShape))
+.concat(')')
+
+else
+
+'@OslcResourceShape(title = "'
+.concat(aShape.oclAsType(Resource).name).concat(' ').concat('Resource Shape')
+.concat('", describes = ')
+.concat(javaInterfaceNameForConstants(aShape.definingDomainSpecification()))
+.concat('.')
+.concat(shapeTypeConstantName(aShape))
+.concat(')')
+
+endif
+/]
+

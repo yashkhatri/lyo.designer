@@ -31,10 +31,11 @@
 [import org::eclipse::lyo::oslc4j::codegenerator::services::services/]
 [import org::eclipse::lyo::oslc4j::codegenerator::services::serviceServices/]
 [import org::eclipse::lyo::oslc4j::codegenerator::services::serviceProviderServices/]
-[import org::eclipse::lyo::oslc4j::codegenerator::services::resourceServices/]
 [import org::eclipse::lyo::oslc4j::codegenerator::services::resourcePropertyServices/]
 [import org::eclipse::lyo::oslc4j::codegenerator::services::adaptorInterfaceServices/]
 [import org::eclipse::lyo::oslc4j::codegenerator::services::domainSpecificationServices/]
+[import org::eclipse::lyo::oslc4j::codegenerator::files::generateShapeCommon/]
+[import org::eclipse::lyo::oslc4j::codegenerator::services::commonShapeServices/]
 
 [template public resourcePropertyAsTextInputForCreation(aProperty: ResourceProperty)]
 "<input name=\"[javaName(aProperty, false)/]\" type=\"text\" style=\"width: 400px\" id=\"[javaName(aProperty, false)/]\" [if (Sequence{'excatlyOne', 'oneOrMany'}->includes(aProperty.occurs.toString()))]required[/if]>"
@@ -75,13 +76,7 @@ static public String [propertyToHtmlForCreationMethodName(aProperty, aResource, 
 /*******************************************************************************
  * Copyright (c) 2012 IBM Corporation and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- *
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- * http://www.eclipse.org/org/documents/edl-v10.php.
+[generateCopyRightStatement(aResource)/]
  *
  * Contributors:
  *
@@ -89,7 +84,7 @@ static public String [propertyToHtmlForCreationMethodName(aProperty, aResource, 
  *     Alberto Giammaria    - initial API and implementation
  *     Chris Peters         - initial API and implementation
  *     Gianluca Bernardini  - initial API and implementation
- *       Sam Padgett          - initial API and implementation
+ *     Sam Padgett          - initial API and implementation
  *     Michael Fiedler      - adapted for OSLC4J
  *     Jad El-khoury        - initial implementation of code generator (422448)
  *     Matthieu Helleboid   - Support for multiple Service Providers.
@@ -100,46 +95,22 @@ static public String [propertyToHtmlForCreationMethodName(aProperty, aResource, 
 // [/protected]
 [/template]
 
-[template public generatePackageDeclaration(aResource : Resource, contextAdaptorInterface : AdaptorInterface, defaultJavaClassPackageName : String)]
-package [javaClassPackageName(aResource, contextAdaptorInterface, defaultJavaClassPackageName) /];
-[/template]
-
 [template public generateImports(aResource : Resource, contextAdaptorInterface : AdaptorInterface, defaultJavaClassPackageName : String)]
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.text.SimpleDateFormat;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Iterator;
-import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import javax.ws.rs.core.UriBuilder;
+
+[generateCommonImports(contextAdaptorInterface, defaultJavaClassPackageName)/]
 
 import org.eclipse.lyo.oslc4j.core.OSLC4JUtils;
 import org.eclipse.lyo.oslc4j.core.exception.OslcCoreApplicationException;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcAllowedValue;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcDescription;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcMemberProperty;
-import org.eclipse.lyo.oslc4j.core.annotation.OslcName;
-import org.eclipse.lyo.oslc4j.core.annotation.OslcNamespace;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcOccurs;
-import org.eclipse.lyo.oslc4j.core.annotation.OslcPropertyDefinition;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcRange;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcReadOnly;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcRepresentation;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcResourceShape;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcTitle;
 import org.eclipse.lyo.oslc4j.core.annotation.OslcValueType;
-import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
-import org.eclipse.lyo.oslc4j.core.model.Link;
 import org.eclipse.lyo.oslc4j.core.model.Occurs;
 import org.eclipse.lyo.oslc4j.core.model.OslcConstants;
 import org.eclipse.lyo.oslc4j.core.model.Representation;
@@ -147,11 +118,10 @@ import org.eclipse.lyo.oslc4j.core.model.ValueType;
 import org.eclipse.lyo.oslc4j.core.model.ResourceShape;
 import org.eclipse.lyo.oslc4j.core.model.ResourceShapeFactory;
 
-import [javaInterfaceFullNameForConstants(aResource.definingDomainSpecification(), contextAdaptorInterface, defaultJavaClassPackageName)/];
-[if (not aResource.directParentResource().oclIsUndefined())]import [javaClassFullName(aResource.directParentResource(), contextAdaptorInterface, defaultJavaClassPackageName) /];[/if]
-[for (r: Resource | aResource.interfaceResources()->sortedBy(name)) separator(lineSeparator())]import [javaInterfaceFullName(r, contextAdaptorInterface, defaultJavaClassPackageName) /];[/for]
-[for (aDomainSpecification: DomainSpecification | (aResource.resourceProperties->union(aResource.interfaceProperties()->asSet())->collect(p: ResourceProperty | Set{p.definingDomainSpecification()}->union(p.range.definingDomainSpecification()->asSet())))->flatten()->asSet()->sortedBy(name)) separator(lineSeparator())]import [javaInterfaceFullNameForConstants(aDomainSpecification, contextAdaptorInterface, defaultJavaClassPackageName) /];[/for]
-[for (aProperty: ResourceProperty | allProperties(aResource)->sortedBy(name))]
+[if (not aResource.directParentShape().oclIsUndefined())]import [javaClassFullName(aResource.directParentShape(), contextAdaptorInterface, defaultJavaClassPackageName) /];[/if]
+[for (r: Resource | aResource.interfaceShapes().oclAsType(Resource)->sortedBy(name)) separator(lineSeparator())]import [javaInterfaceFullName(r, contextAdaptorInterface, defaultJavaClassPackageName) /];[/for]
+[for (aDomainSpecification: DomainSpecification | (aResource.resourceProperties->union(aResource.interfaceShapeProperties().oclAsType(ResourceProperty)->asSet())->collect(p: ResourceProperty | Set{p.definingDomainSpecification()}->union(p.range.definingDomainSpecification()->asSet())))->flatten()->asSet()->sortedBy(name)) separator(lineSeparator())]import [javaInterfaceFullNameForConstants(aDomainSpecification, contextAdaptorInterface, defaultJavaClassPackageName) /];[/for]
+[for (aProperty: ResourceProperty | allShapeProperties(aResource).oclAsType(ResourceProperty)->sortedBy(name))]
 [if(Sequence{'Resource', 'LocalResource'}->includes(aProperty.valueType.toString())) ]
 [for (r: Resource | aProperty.range)]
 import [javaClassFullName(r, contextAdaptorInterface, defaultJavaClassPackageName) /];
@@ -163,61 +133,16 @@ import [javaClassFullName(r, contextAdaptorInterface, defaultJavaClassPackageNam
 // [/protected]
 [/template]
 
-[template public generatePreClassCode(aResource : Resource, contextAdaptorInterface : AdaptorInterface)]
-// [protected ('preClassCode')]
-// [/protected]
-[/template]
-
-[template public generateClassAnnotations(aResource : Resource, contextAdaptorInterface : AdaptorInterface)]
-// [protected ('classAnnotations')]
-// [/protected]
-[namespaceAnnotation(aResource)/]
-[nameAnnotation(aResource)/]
-[resourceShapeAnnotation(aResource)/]
-[/template]
-
-[template public generateClassDeclaration(aResource : Resource, contextAdaptorInterface : AdaptorInterface)]
-public class [javaClassName(aResource) /]
-    extends [if (aResource.directParentResource().oclIsUndefined())]AbstractResource[else][javaClassName(aResource.directParentResource()) /][/if]
-    implements [javaInterfaceName(aResource)/][if aResource.interfaceResources()->size() > 0], [for (aResourceToInterface: Resource | aResource.interfaceResources()->sortedBy(name)) separator(', ')][javaInterfaceName(aResourceToInterface) /][/for][/if]
-[/template]
-
 [template public generateInstanceAttributes(aResource : Resource, contextAdaptorInterface : AdaptorInterface)]
-[for (aProperty: ResourceProperty | ((aResource.resourceProperties->asSequence())->union(interfaceProperties(aResource))))]
+[for (aProperty: ResourceProperty | ((aResource.resourceProperties->asSequence())->union(interfaceShapeProperties(aResource).oclAsType(ResourceProperty))))]
 // [protected ('attributeAnnotation:'.concat(javaAttributeName(aProperty, aResource)))]
 // [/protected]
 private [javaAttributeTypeDeclaration(aProperty) /] [javaAttributeName(aProperty, aResource)/][if javaAttributeTypeNeedsConstruction(aProperty)] = new [javaAttributeTypeDeclaration(aProperty)/]()[/if];
 [/for]
 [/template]
 
-[template public generateClassAttributes(aResource : Resource, contextAdaptorInterface : AdaptorInterface)]
-// [protected ('classAttributes')]
-// [/protected]
-[/template]
-
-[template public generateClassMethods(aResource : Resource, contextAdaptorInterface : AdaptorInterface)]
-// [protected ('classMethods')]
-// [/protected]
-[/template]
-
 [template public generateConstructors(aResource : Resource, contextAdaptorInterface : AdaptorInterface)]
-public [javaClassName(aResource) /]()
-       throws URISyntaxException
-{
-    super();
-
-    // [protected ('constructor1')]
-    // [/protected]
-}
-
-public [javaClassName(aResource) /](final URI about)
-       throws URISyntaxException
-{
-    super(about);
-
-    // [protected ('constructor2')]
-    // [/protected]
-}
+[generateConstructorsCommon(aResource, contextAdaptorInterface)/]
 
 [for (aBasicCapability: BasicCapability | basicCapabilities(contextAdaptorInterface, aResource))]
 [let methodSuffix: String = (if (basicCapabilities(contextAdaptorInterface, aResource)->size() = 1) then '' else basicCapabilities(contextAdaptorInterface, aResource)->indexOf(aBasicCapability).toString() endif)]
@@ -277,7 +202,7 @@ public static Link constructLink[methodSuffix/]([commaSeparate(aResource.instanc
 public static ResourceShape createResourceShape() throws OslcCoreApplicationException, URISyntaxException {
     return ResourceShapeFactory.createResourceShape(OSLC4JUtils.getServletURI(),
     OslcConstants.PATH_RESOURCE_SHAPES,
-    [javaInterfaceNameForConstants(aResource.definingDomainSpecification())/].[resourcePathConstantName(aResource)/],
+    [javaInterfaceNameForConstants(aResource.definingDomainSpecification())/].[shapePathConstantName(aResource)/],
     [javaClassName(aResource) /].class);
 }
 
@@ -341,7 +266,7 @@ public String toHtml(boolean asLocalResource)
 [/template]
 
 [template public generateAddToAttributeMethods(aResource : Resource, contextAdaptorInterface : AdaptorInterface)]
-[for (aProperty: ResourceProperty | ((aResource.resourceProperties->asSequence())->union(interfaceProperties(aResource))))]
+[for (aProperty: ResourceProperty | ((aResource.resourceProperties->asSequence())->union(interfaceShapeProperties(aResource).oclAsType(ResourceProperty))))]
     [if (Sequence{'zeroOrMany', 'oneOrMany'}->includes(aProperty.occurs.toString()))]
 public void add[javaAttributeName(aProperty, aResource).toUpperFirst()/](final [javaAttributeBaseType(aProperty) /] [javaName(aProperty, false)/])
 {
@@ -353,7 +278,7 @@ public void add[javaAttributeName(aProperty, aResource).toUpperFirst()/](final [
 [/template]
 
 [template public generateGetters(aResource : Resource, contextAdaptorInterface : AdaptorInterface)]
-[for (aProperty: ResourceProperty | ((aResource.resourceProperties->asSequence())->union(interfaceProperties(aResource))))]
+[for (aProperty: ResourceProperty | ((aResource.resourceProperties->asSequence())->union(interfaceShapeProperties(aResource).oclAsType(ResourceProperty))))]
 // [protected ('getterAnnotation:'.concat(javaAttributeName(aProperty, aResource)))]
 // [/protected]
 [if (not (nameAnnotation(aProperty) = ''))]
@@ -400,7 +325,7 @@ public [javaAttributeTypeDeclaration(aProperty) /] [if (aProperty.valueType.toSt
 [/template]
 
 [template public generateSetters(aResource : Resource, contextAdaptorInterface : AdaptorInterface)]
-[for (aProperty: ResourceProperty | ((aResource.resourceProperties->asSequence())->union(interfaceProperties(aResource))))]
+[for (aProperty: ResourceProperty | ((aResource.resourceProperties->asSequence())->union(interfaceShapeProperties(aResource).oclAsType(ResourceProperty))))]
 // [protected ('setterAnnotation:'.concat(javaAttributeName(aProperty, aResource)))]
 // [/protected]
 public void set[javaAttributeName(aProperty, aResource).toUpperFirst()/](final [javaAttributeTypeDeclaration(aProperty) /] [javaName(aProperty, false)/] )
@@ -425,7 +350,7 @@ public void set[javaAttributeName(aProperty, aResource).toUpperFirst()/](final [
 [/template]
 
 [template public generateAttributeToHtmlMethods(aResource : Resource, contextAdaptorInterface : AdaptorInterface)]
-[for (aProperty: ResourceProperty | ((aResource.resourceProperties->asSequence())->union(interfaceProperties(aResource))))]
+[for (aProperty: ResourceProperty | ((aResource.resourceProperties->asSequence())->union(interfaceShapeProperties(aResource).oclAsType(ResourceProperty))))]
 [propertyToHtmlForCreationMethod(aProperty, aResource, null, '')/]
 
 [for (aCreationDialog: Dialog| contextAdaptorInterface.creationDialogs(aResource))]
@@ -435,7 +360,7 @@ public void set[javaAttributeName(aProperty, aResource).toUpperFirst()/](final [
 
 [comment TODO: This ToHTML is quite complicated. At the moment, I get expections because some of the properties are null.
 I am getting to many if/else-ses. I think I need to rethink calmely to have a cleaner structure. Good enough for now I hope. /]
-[for (aProperty: ResourceProperty | ((aResource.resourceProperties->asSequence())->union(interfaceProperties(aResource))))]
+[for (aProperty: ResourceProperty | ((aResource.resourceProperties->asSequence())->union(interfaceShapeProperties(aResource).oclAsType(ResourceProperty))))]
 public String [javaAttributeName(aProperty, aResource) /]ToHtml()
 {
     String s = "";

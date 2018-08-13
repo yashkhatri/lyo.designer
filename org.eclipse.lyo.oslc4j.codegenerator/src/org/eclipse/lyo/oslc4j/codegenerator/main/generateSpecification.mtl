@@ -21,12 +21,11 @@
 [module generateSpecification('http://org.eclipse.lyo/oslc4j/adaptorInterface', 'http://org.eclipse.lyo/oslc4j/vocabulary')]
 
 [import org::eclipse::lyo::oslc4j::codegenerator::services::services/]
-[import org::eclipse::lyo::oslc4j::codegenerator::services::resourceServices/]
 [import org::eclipse::lyo::oslc4j::codegenerator::services::domainSpecificationServices/]
 [import org::eclipse::lyo::oslc4j::codegenerator::services::vocabularyServices/]
 [import org::eclipse::lyo::oslc4j::codegenerator::services::resourcePropertyServices/]
 [import org::eclipse::lyo::oslc4j::codegenerator::services::adaptorInterfaceServices/]
-[import org::eclipse::lyo::oslc4j::codegenerator::services::shaclShapeServices/]
+[import org::eclipse::lyo::oslc4j::codegenerator::services::commonShapeServices/]
 
 [import org::eclipse::lyo::oslc4j::codegenerator::files::generateDomainSpecificationConstants/]
 [import org::eclipse::lyo::oslc4j::codegenerator::files::generateVocabularyConstants/]
@@ -46,12 +45,12 @@ aSpecification.generationSetting.oclIsUndefined()
 
 [query public relevantResources(aSpecification : Specification) : Set(Resource) =
     (aSpecification.domainSpecifications.resources
-    ->union(aSpecification.domainSpecifications.resources.allRelatedResources()))->flatten()->asSet()
+    ->union(aSpecification.domainSpecifications.resources.allRelatedShapes()))->flatten()->asSet()
 /]
 
 [query public relevantShaclShapes(aSpecification : Specification) : Set(ShaclShape) =
     (aSpecification.domainSpecifications.shaclShapes
-    ->union(aSpecification.domainSpecifications.shaclShapes.allRelatedShaclShapes()))->flatten()->asSet()
+    ->union(aSpecification.domainSpecifications.shaclShapes.allRelatedShapes()))->flatten()->asSet()
 /]
 
 [query public relevantDomainSpecifications(aSpecification : Specification) : Set(DomainSpecification) =

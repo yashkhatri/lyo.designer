@@ -1,0 +1,120 @@
+[comment encoding = UTF-8 /]
+[comment
+/*******************************************************************************
+ * Copyright (c) Yash Khatri.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ *
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *
+ *     Yash Khatri          -  Support for Shacl Shapes.
+ *******************************************************************************/
+/]
+
+[module generateShapeCommon('http://org.eclipse.lyo/oslc4j/adaptorInterface')]
+
+[import org::eclipse::lyo::oslc4j::codegenerator::services::domainSpecificationServices/]
+[import org::eclipse::lyo::oslc4j::codegenerator::services::shaclPropertyServices/]
+[import org::eclipse::lyo::oslc4j::codegenerator::services::commonShapeServices/]
+
+[template public generateCopyRightStatement(aShape : Shape)]
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ *
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+[/template]
+
+[template public generatePackageDeclaration(aShape : Shape, contextAdaptorInterface : AdaptorInterface, defaultJavaClassPackageName : String)]
+package [javaClassPackageName(aShape, contextAdaptorInterface, defaultJavaClassPackageName) /];
+[/template]
+
+[template public generateCommonImports(aShape : Shape, contextAdaptorInterface : AdaptorInterface, defaultJavaClassPackageName : String)]
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Iterator;
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import javax.ws.rs.core.UriBuilder;
+import java.math.BigInteger;
+
+import org.eclipse.lyo.oslc4j.core.annotation.OslcName;
+import org.eclipse.lyo.oslc4j.core.annotation.OslcPropertyDefinition;
+import org.eclipse.lyo.oslc4j.core.annotation.OslcNamespace;
+import org.eclipse.lyo.oslc4j.core.model.AbstractResource;
+import org.eclipse.lyo.oslc4j.core.model.Link;
+
+import [javaInterfaceFullNameForConstants(aShape.definingDomainSpecification(), contextAdaptorInterface, defaultJavaClassPackageName)/];
+
+// [protected ('imports')]
+// [/protected]
+[/template]
+
+[template public generatePreClassCode(aShape : Shape, contextAdaptorInterface : AdaptorInterface)]
+// [protected ('preClassCode')]
+// [/protected]
+[/template]
+
+[template public generateClassAnnotations(aShape : Shape, contextAdaptorInterface : AdaptorInterface)]
+// [protected ('classAnnotations')]
+// [/protected]
+[namespaceAnnotation(aShape)/]
+[nameAnnotation(aShape)/]
+[shapeAnnotation(aShape)/]
+[/template]
+
+[template public generateClassDeclaration(aShape : Shape, contextAdaptorInterface : AdaptorInterface)]
+public class [javaClassName(aShape) /]
+    extends [if (aShape.directParentShape().oclIsUndefined())]AbstractResource[else][javaClassName(aShape.directParentShape()) /][/if]
+    implements [javaInterfaceName(aShape)/][if aShape.interfaceShapes()->size() > 0], [for (aResourceToInterface: Shape | aShape.interfaceShapes()) separator(', ')][javaInterfaceName(aResourceToInterface) /][/for][/if]
+[/template]
+
+[template public generateClassAttributes(aShape : Shape, contextAdaptorInterface : AdaptorInterface)]
+// [protected ('classAttributes')]
+// [/protected]
+[/template]
+
+[template public generateClassMethods(aShape : Shape, contextAdaptorInterface : AdaptorInterface)]
+// [protected ('classMethods')]
+// [/protected]
+[/template]
+
+[template public generateConstructorsCommon(aShape : Shape, contextAdaptorInterface : AdaptorInterface)]
+public [javaClassName(aShape) /]()
+       throws URISyntaxException
+{
+    super();
+
+    // [protected ('constructor1')]
+    // [/protected]
+}
+
+public [javaClassName(aShape) /](final URI about)
+       throws URISyntaxException
+{
+    super(about);
+
+    // [protected ('constructor2')]
+    // [/protected]
+}
+[/template]
+
